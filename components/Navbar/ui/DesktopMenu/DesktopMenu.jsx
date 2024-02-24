@@ -1,27 +1,28 @@
 import Link from "next/link";
+import {Routes} from "@/constants/routes";
+import NavLink from "../NavLink/NavLink";
 
-const DesktopMenu = () => {
+const DesktopMenu = ({isLoggedIn}) => {
     return (
         <div className='hidden md:ml-6 md:block'>
             <div className='flex space-x-2'>
-                <Link
-                    href='/'
-                    className='text-white bg-black hover:bg-gray-900 hover:text-white rounded-md px-3 py-2'
+                <NavLink
+                    href={Routes.HOME}
                 >
                     Home
-                </Link>
-                <Link
-                    href='/properties'
-                    className='text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2'
+                </NavLink>
+                <NavLink
+                    href={Routes.PROPERTIES}
                 >
                     Properties
-                </Link>
-                <Link
-                    href='/properties/add'
-                    className='text-white hover:bg-gray-900 hover:text-white rounded-md px-3 py-2'
-                >
-                    Add Property
-                </Link>
+                </NavLink>
+                {isLoggedIn && (
+                    <NavLink
+                        href={Routes.PROPERTIES_ADD}
+                    >
+                        Add Property
+                    </NavLink>
+                )}
             </div>
         </div>
     );
