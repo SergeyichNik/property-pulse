@@ -1,4 +1,4 @@
-import {FaBath, FaBed, FaMoneyBill, FaRulerCombined, FaSol} from 'react-icons/fa'
+import {FaBath, FaBed, FaLocationArrow, FaMoneyBill, FaRulerCombined} from 'react-icons/fa'
 import Link from "next/link";
 import Image from "next/image";
 
@@ -63,7 +63,7 @@ const PropertyCard = ({property}) => {
 
                 <div className='flex flex-col lg:flex-row justify-between mb-4'>
                     <div className='flex align-middle gap-2 mb-4 lg:mb-0'>
-                        <i className='fa-solid fa-location-dot text-lg text-orange-700'></i>
+                        <FaLocationArrow  className='text-orange-700'/>
                         <span className='text-orange-700'>
               {' '}
                             {property.location.city}, {property.location.state}
