@@ -4,13 +4,13 @@ import PropertyCard from "../components/PropertyCard/PropertyCard";
 import Link from "next/link";
 import {Routes} from "../constants/routes";
 import {fetchProperties} from "@/api/requests";
+import {callApi} from "../api/utils";
 
 const MainPage = async () => {
 
-    const properties = await fetchProperties();
-    const recentProperties = properties
-        .sort(() => Math.random() - Math.random())
-        .slice(0, 3);
+    const properties = await callApi(fetchProperties, []);
+
+    const recentProperties = properties.sort(() => Math.random() - Math.random()).slice(0, 3);
     return (
         <div>
             <Hero/>

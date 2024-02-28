@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const PropertyCard = ({property}) => {
+
     const getRateDisplay = () => {
         const { rates } = property;
         if (rates.monthly) {
@@ -20,7 +21,7 @@ const PropertyCard = ({property}) => {
                 width='0'
                 height='0'
                 sizes='100vw'
-                src='/images/properties/a1.jpg'
+                src={`/images/properties/${property.images[0]}`}
                 alt=''
                 className='w-full h-auto rounded-t-xl'
             />
