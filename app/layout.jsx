@@ -1,6 +1,7 @@
 import '@/assets/styles/globals.css';
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
+import AuthProvider from "../components/AuthProvider/AuthProvider";
 
 export const metadata = {
     title: 'Property Pulse | Find best rental',
@@ -10,6 +11,8 @@ export const metadata = {
 
 const MainLayout = ({children}) => {
     return (
+        <AuthProvider>
+
         <html lang={'en'}>
         <body>
         <main>
@@ -21,6 +24,7 @@ const MainLayout = ({children}) => {
         </footer>
         </body>
         </html>
+        </AuthProvider>
     )
 }
 

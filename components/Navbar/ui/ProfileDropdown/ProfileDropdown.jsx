@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-const ProfileDropdown = () => {
+const ProfileDropdown = ({onSignOutClick}) => {
     return (
         <div
             id='user-menu'
@@ -28,15 +28,15 @@ const ProfileDropdown = () => {
             >
                 Saved Properties
             </Link>
-            <Link
-                href='#'
+            <button
+                onClick={onSignOutClick}
                 className='block px-4 py-2 text-sm text-gray-700'
                 role='menuitem'
                 tabIndex='-1'
                 id='user-menu-item-2'
             >
                 Sign Out
-            </Link>
+            </button>
         </div>
     );
 };

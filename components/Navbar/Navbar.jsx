@@ -8,14 +8,31 @@ import ProfileDropdown from "./ui/ProfileDropdown/ProfileDropdown";
 import {FaGoogle} from 'react-icons/fa'
 import DesktopMenu from "./ui/DesktopMenu/DesktopMenu";
 import Logo from "./ui/Logo/Logo";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
-
+import { signIn, signOut, useSession, getProviders } from 'next-auth/react';
 
 const Navbar = () => {
+
+    const {data: session} = useSession();
+
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
+    const [providers, setProviders] = useState(null);
+
+    const isLoggedIn = !!session;
+
+    useEffect(() => {
+        const setAuthProviders = async () => {
+            const res = await getProviders();
+
+            setProviders(res);
+        };
+
+        setAuthProviders();
+    }, []);
+
+    const profileImage = session?.user?.image;
 
     return (
         <nav className='bg-blue-700 border-b border-blue-500'>
@@ -61,10 +78,13 @@ const Navbar = () => {
                     {!isLoggedIn && (
                         <div className='hidden md:block md:ml-6'>
                             <div className='flex items-center'>
-                                <button className='flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2'>
-                                    <FaGoogle className={'text-white mr-1'}/>
-                                    <span>Login or Register</span>
-                                </button>
+                                {providers &&
+                                    Object.values(providers).map((provider) => (
+                                        <button onClick={() => signIn(provider.id)} key={provider.name} className='flex items-center text-white bg-gray-700 hover:bg-gray-900 hover:text-white rounded-md px-3 py-2'>
+                                            <FaGoogle className='text-white mr-2' />
+                                            <span>Login or Register</span>
+                                        </button>
+                                    ))}
                             </div>
                         </div>
                     )}
@@ -114,18 +134,23 @@ const Navbar = () => {
                                         <span className='sr-only'>Open user menu</span>
                                         <Image
                                             className='h-8 w-8 rounded-full'
-                                            src={profileDefault}
+                                            src={profileImage || profileDefault}
+                                            width={40}
+                                            height={40}
                                             alt=''
                                         />
                                     </button>
                                 </div>
-                                {isProfileDropdownOpen && <ProfileDropdown/>}
+                                {isProfileDropdownOpen && <ProfileDropdown onSignOutClick={() => {
+                                    setIsProfileDropdownOpen(false);
+                                    signOut();
+                                }}/>}
                             </div>
                         </div>
                     )}
                 </div>
             </div>
-            {isMobileMenuOpen && <MobileMenu isLoggedIn={isLoggedIn}/>}
+            {isMobileMenuOpen && <MobileMenu onSignInClick={(id) => signIn(id)} providers={providers} isLoggedIn={isLoggedIn}/>}
         </nav>
     );
 };
