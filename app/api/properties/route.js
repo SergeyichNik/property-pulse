@@ -3,7 +3,7 @@ import Property from "../../../models/Property";
 import {getSessionUser} from "../../../utils/getSessionUser";
 import {$api} from "../../../api/config";
 import axios from "axios";
-import {imageUpload} from "../../../utils/imageUpload";
+import imageCloud from "../../../utils/imageCloud";
 
 export const GET = async () => {
     try {
@@ -40,7 +40,7 @@ export const POST = async (request) => {
             const formData = new FormData();
             formData.append('images', image);
 
-            const uploadedImageUrl = await imageUpload(image);
+            const uploadedImageUrl = await imageCloud.uploadImage(formData);
 
             imageUploadPromises.push(uploadedImageUrl)
         }

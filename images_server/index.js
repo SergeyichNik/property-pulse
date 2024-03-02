@@ -1,4 +1,5 @@
 const express = require('express');
+const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
@@ -37,6 +38,29 @@ app.get('/uploads/:imageName', (req, res) => {
             res.sendFile(imagePath, { root: __dirname });
         }
     });
+});
+
+app.post('/delete', (req, res) => {
+    const imagesToDelete = req.body.images; // Предполагается, что клиент отправляет массив URL изображений
+
+    imagesToDelete.forEach(imageUrl => {
+        const imageName = path.basename(imageUrl);
+        const imagePath = `images/${imageName}`;
+
+        // Проверяем существует ли файл
+        fs.access(imagePath, fs.constants.F_OK, (err) => {
+            if (!err) {
+                // Удаляем изображение из файловой системы
+                fs.unlink(imagePath, err => {
+                    if (err) {
+                        console.error('Ошибка удаления изображения:', err);
+                    }
+                });
+            }
+        });
+    });
+
+    res.status(200).send('Изображения успешно удалены');
 });
 
 app.listen(PORT, () => {

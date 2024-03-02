@@ -5,6 +5,8 @@ import {useSession} from 'next-auth/react';
 import profileDefault from '@/assets/images/profile.png';
 import {useState, useEffect} from 'react';
 import Spinner from "../../components/Spinner/Spinner";
+import {$api} from "../../api/config";
+import {toast} from "react-toastify";
 
 const ProfilePage = () => {
 
@@ -17,33 +19,56 @@ const ProfilePage = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Fetch user properties from API
         const fetchUserProperties = async (userId) => {
             if (!userId) {
                 return;
             }
 
             try {
-                const res = await fetch(`/api/properties/user/${userId}`, {
-                    method: 'GET',
-                });
+                const res = await $api.get(`/properties/user/${userId}`);
 
                 if (res.status === 200) {
-                    const data = await res.json();
-                    setProperties(data);
+                    setProperties(res.data);
                     setLoading(false);
                 }
             } catch (error) {
-                // Handle fetch errors
                 console.error(error);
             }
         };
-
-        // Fetch user properties when session data is available
         if (session?.user?.id) {
             fetchUserProperties(session.user.id);
         }
     }, [session]);
+
+    const handleDeleteProperty = async (e) => {
+
+        const propertyId = e.currentTarget.value;
+
+        const confirmed = window.confirm(
+            'Are you sure you want to delete this property?'
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            const res = await $api.delete(`/properties/${propertyId}`);
+
+            if (res.status === 200) {
+                const updateProperties = properties.filter(
+                    (property) => property._id !== propertyId
+                );
+                setProperties(updateProperties);
+                toast.success('Property deleted successfully')
+            } else {
+                toast.error('Failed to delete property');
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to delete property');
+        }
+    };
 
     return (
         <section className='bg-blue-50'>
@@ -109,6 +134,8 @@ const ProfilePage = () => {
                                                 Edit
                                             </Link>
                                             <button
+                                                value={property._id}
+                                                onClick={handleDeleteProperty}
                                                 className='bg-red-500 text-white px-3 py-2 rounded-md hover:bg-red-600'
                                                 type='button'
                                             >
