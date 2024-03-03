@@ -2,127 +2,72 @@
 
 import {fetchProperty} from "../../../api/requests";
 import {useEffect, useState} from "react";
-import {callApi} from "../../../api/utils";
 import {useParams} from "next/navigation";
 import PropertyHeaderImage from "../../../components/PropertyHeaderImage/PropertyHeaderImage";
 import Link from "next/link";
-import {Routes} from "../../../constants/routes";
 import PropertyDetails from "../../../components/PropertyDetails/PropertyDetails";
-import {FaArrowLeft, FaBookmark, FaPaperPlane, FaShare} from "react-icons/fa";
+import {FaArrowLeft} from "react-icons/fa";
 import Spinner from "../../../components/Spinner/Spinner";
+import BookmarkButton from "../../../components/BookmarkButton/BookmarkButton";
+import ShareButtons from "../../../components/ShareButtons/ShareButtons";
+import PropertyContactForm from "../../../components/PropertyContactForm/PropertyContactForm";
+import PropertyImages from "../../../components/PropertyImages/PropertyImages";
+import {callApi} from "../../../api/utils";
 
 const PropertyPage = () => {
-    const {id} = useParams();
+    const { id } = useParams();
 
     const [property, setProperty] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setLoading(true)
-        callApi(fetchProperty, null, id)
-            .then((res) => setProperty(res))
-            .finally(() => setLoading(false))
-    }, [id]);
+        const fetchPropertyData = async () => {
+            const property = await callApi(fetchProperty, null, id);
+            setProperty(property);
+            setLoading(false);
+        };
 
-    if (!property && !loading)
-        return (
-            <h1 className='text-center text-2xl font-bold mt-10'>
-                Property Not Found
-            </h1>
-        );
+        fetchPropertyData();
+    }, [id]);
 
     return (
         <>
-            {loading && <Spinner loading={loading}/>}
-            {!loading && property && (<>
-                <PropertyHeaderImage image={property.images[0]}/>
+            {!loading && <PropertyHeaderImage image={property.images[0]} />}
+
+            {!loading && (
                 <section>
                     <div className='container m-auto py-6 px-6'>
                         <Link
-                            href={Routes.PROPERTIES}
+                            href='/properties'
                             className='text-blue-500 hover:text-blue-600 flex items-center'
                         >
-                            <FaArrowLeft className={'mr-2'}/>Back to Properties
+                            <FaArrowLeft className='mr-2' /> Back to Properties
                         </Link>
                     </div>
                 </section>
+            )}
+
+            {loading ? (
+                <Spinner loading={loading} />
+            ) : (
                 <section className='bg-blue-50'>
                     <div className='container m-auto py-10 px-6'>
                         <div className='grid grid-cols-1 md:grid-cols-70/30 w-full gap-6'>
-                            <PropertyDetails property={property}/>
+                            <PropertyDetails property={property} />
 
                             {/* <!-- Sidebar --> */}
                             <aside className='space-y-4'>
-                                <div>
-                                    <button
-                                        className='bg-blue-500 hover:bg-blue-600 text-white font-bold w-full py-2 px-4 rounded-full flex items-center justify-center'>
-                                        <FaBookmark className='mr-2'/>
-                                        Bookmark Property
-                                    </button>
-                                </div>
-                                <div>
-                                    <button
-                                        className='bg-orange-500 hover:bg-orange-600 text-white font-bold w-full py-2 px-4 rounded-full flex items-center justify-center'>
-                                        <FaShare className='mr-2'/> Share Property
-                                    </button>
-                                </div>
-
-                                {/* <!-- Contact Form --> */}
-                                <div className='bg-white p-6 rounded-lg shadow-md'>
-                                    <h3 className='text-xl font-bold mb-6'>
-                                        Contact Property Manager
-                                    </h3>
-                                    <form
-                                        action='mailto:support@traversymedia.com'
-                                        method='post'
-                                        encType='text/plain'
-                                    >
-                                        <div className='mb-4'>
-                                            <label
-                                                className='block text-gray-700 text-sm font-bold mb-2'
-                                                htmlFor='email'
-                                            >
-                                                Email:
-                                            </label>
-                                            <input
-                                                className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
-                                                id='email'
-                                                type='email'
-                                                placeholder='Enter your email'
-                                            />
-                                        </div>
-                                        <div className='mb-4'>
-                                            <label
-                                                className='block text-gray-700 text-sm font-bold mb-2'
-                                                htmlFor='message'
-                                            >
-                                                Message:
-                                            </label>
-                                            <textarea
-                                                className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 h-44 focus:outline-none focus:shadow-outline'
-                                                id='message'
-                                                placeholder='Enter your message'
-                                            />
-                                        </div>
-                                        <div>
-                                            <button
-                                                className='bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline flex items-center justify-center'
-                                                type='submit'
-                                            >
-                                                <FaPaperPlane className='mr-2'/> Send Message
-                                            </button>
-                                        </div>
-                                    </form>
-                                </div>
+                                <BookmarkButton property={property} />
+                                <ShareButtons property={property} />
+                                <PropertyContactForm property={property} />
                             </aside>
                         </div>
                     </div>
                 </section>
-            </>
-        )}
+            )}
+            {!loading && <PropertyImages images={property.images} />}
         </>
-    )
-    ;
+    );
 };
 
 export default PropertyPage;
